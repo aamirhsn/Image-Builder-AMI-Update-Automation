@@ -1,0 +1,25 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [{
+    "Sid": "allow_account_to_put_events",
+    "Effect": "Allow",
+    "Principal": {
+      "AWS": "arn:aws:iam::[SourceAccount]:root"
+    },
+    "Action": "events:PutEvents",
+    "Resource": "arn:aws:events:us-east-1:[TargetAccount]:event-bus/default"
+  }, {
+    "Sid": "allow_account_to_manage_rules_they_created",
+    "Effect": "Allow",
+    "Principal": {
+      "AWS": "arn:aws:iam::[SourceAccount]:root"
+    },
+    "Action": ["events:PutRule", "events:PutTargets", "events:DeleteRule", "events:RemoveTargets", "events:DisableRule", "events:EnableRule", "events:TagResource", "events:UntagResource", "events:DescribeRule", "events:ListTargetsByRule", "events:ListTagsForResource"],
+    "Resource": "arn:aws:events:us-east-1:[TargetAccount]:rule/default",
+    "Condition": {
+      "StringEqualsIfExists": {
+        "events:creatorAccount": "[SourceAccount]"
+      }
+    }
+  }]
+}
