@@ -1,0 +1,16 @@
+{
+  "source": ["aws.ec2"],
+  "detail": {
+    "eventSource": ["ec2.amazonaws.com"],
+    "eventName": ["ModifyImageAttribute"],
+    "requestParameters": {
+      "launchPermission": {
+        "add": {
+          "items": {
+            "userId": ["Target Account ID"]
+          }
+        }
+      }
+    }
+  }
+}
