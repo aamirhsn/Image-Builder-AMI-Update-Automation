@@ -1,0 +1,56 @@
+description: ''
+schemaVersion: '0.3'
+parameters:
+  ImageName:
+    type: String
+    description: Parent Image Name for Image Builder
+  TemplateURL:
+    type: String
+    description: CFN Template URL
+  StackName:
+    type: String
+    description: CFN Stack Name
+  Name:
+    type: String
+    description: SSM Parameter Name where new parent image AMI ID will be stored
+mainSteps:
+  - name: image
+    action: 'aws:executeAwsApi'
+    inputs:
+      Service: ec2
+      Api: DescribeImages
+      Filters:
+        - Name: name
+          Values:
+            - '{{ ImageName }}'
+        - Name: creation-date
+          Values:
+            - '{{global:DATE}}T*'
+    outputs:
+      - Name: ImageId
+        Selector: '$.Images[0].ImageId'
+        Type: String
+    nextStep: param
+    maxAttempts: 2
+  - name: param
+    action: 'aws:executeAwsApi'
+    inputs:
+      Service: ssm
+      Api: PutParameter
+      Name: '{{Name}}'
+      Value: '{{image.ImageId}}'
+      Overwrite: true
+    nextStep: cfn
+    maxAttempts: 2
+  - name: cfn
+    action: 'aws:executeAwsApi'
+    inputs:
+      Service: cloudformation
+      Api: UpdateStack
+      StackName: '{{StackName}}'
+      TemplateURL: '{{TemplateURL}}'
+    outputs:
+      - Name: StackId
+        Selector: $.StackId
+        Type: String
+    maxAttempts: 2
