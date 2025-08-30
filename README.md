@@ -1,4 +1,4 @@
-# EC2 Image Builder : AMI-Update-Automation
+# EventBridge custom pattern to detect new AMI shared and trigger Image Builder pipeline
 1. Gets Parent Image AMI ID
 2. Modifies existing parameter store value with new AMI ID (Parameter Store name should be same as AMI name)
 3. Updates CFN Stack so that new parent ami will be used
